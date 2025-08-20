@@ -24,7 +24,7 @@ const verifyJWT = asyncHandler(async (req, _, next) => {
         next();
 
     } catch (error) {
-        throw new ApiError(401, "Invalid or expired Access Token");
+        throw new ApiError(401, "Unauthorized Access");
     }
 });
 

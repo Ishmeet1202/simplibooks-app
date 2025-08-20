@@ -13,7 +13,7 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
     const refreshToken = await user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
-    user.save({
+    await user.save({
       validateBeforeSave: false,
     });
 
@@ -109,6 +109,7 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "Strict",
+    maxAge: (parseInt(process.env.REFRESH_TOKEN_EXPIRY_SECONDS, 10) * 1000)
   };
 
   return res
@@ -158,6 +159,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "Strict",
+    maxAge: (parseInt(process.env.REFRESH_TOKEN_EXPIRY_SECONDS, 10) * 1000)
   };
 
   return res
@@ -198,6 +200,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "Strict",
+        maxAge: (parseInt(process.env.REFRESH_TOKEN_EXPIRY_SECONDS, 10) * 1000)
     };
 
     return res
