@@ -29,7 +29,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     const validationResult = updateUserProfileSchema.safeParse(req.body);
 
     if (!validationResult.success) {
-        const errorMessages = validationResult.error._zod.def[0].message
+        const errorMessages = validationResult.error.issues.map(issue => issue.message).join(', ');
         throw new ApiError(400, errorMessages);
     }
 
@@ -65,7 +65,7 @@ const changePassword = asyncHandler(async (req, res) => {
     const validationResult = changePasswordSchema.safeParse(req.body);
 
     if (!validationResult.success) {
-        const errorMessages = validationResult.error._zod.def[0].message
+        const errorMessages = validationResult.error.issues.map(issue => issue.message).join(', ');
         throw new ApiError(400, errorMessages);
     }
 

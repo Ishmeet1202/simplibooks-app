@@ -37,10 +37,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const validationResult = registerUserSchema.safeParse(req.body);
 
-//   console.log(validationResult.error._zod.def[0].errors);
-
   if (!validationResult.success) {
-    const errorMessages = validationResult.error._zod.def[0].message
+    const errorMessages = validationResult.error.issues.map(issue => issue.message).join(', ');
     throw new ApiError(400, errorMessages);
   }
 
@@ -80,7 +78,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const validationResult = loginUserSchema.safeParse(req.body);
 
   if (!validationResult.success) {
-    const errorMessages = validationResult.error._zod.def[0].message
+    const errorMessages = validationResult.error.issues.map(issue => issue.message).join(', ');
     throw new ApiError(400, errorMessages);
   }
 
