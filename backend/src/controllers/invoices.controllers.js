@@ -50,7 +50,7 @@ const createInvoice = asyncHandler(async (req, res) => {
 
         },
         {
-            $inc: {"$invoiceSettings.nextNumber" : 1}
+            $inc: {"invoiceSettings.nextNumber" : 1}
         },
         {
             new: true
@@ -80,7 +80,7 @@ const createInvoice = asyncHandler(async (req, res) => {
 
     console.log(calculatedItems);
     
-    const taxRate = tax.rate || 0;
+    const taxRate = tax?.rate || 0;
 
     const taxAmount = subtotal * (taxRate / 100);
 
@@ -170,7 +170,7 @@ const getAllInvoice = asyncHandler(async (req, res) => {
         // Stage 3
         pipeline.push({
             $match: { 
-                "$clientDetails.name": { $regex: clientName, $options: "i" } 
+                "clientDetails.name": { $regex: clientName, $options: "i" } 
             }
         });
     }
