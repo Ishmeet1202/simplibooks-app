@@ -101,9 +101,9 @@ To run this project, you will need to add the following environment variables to
     MONGO_URI=your_mongodb_connection_string
     PORT=5000
     ACCESS_TOKEN_SECRET=your_super_secret_access_token_key
-    ACCESS_TOKEN_EXPIRY=expiry_time
+    ACCESS_TOKEN_EXPIRY_SECONDS=expiry_time
     REFRESH_TOKEN_SECRET=your_super_secret_refresh_token_key
-    REFRESH_TOKEN_EXPIRY=expiry_time
+    REFRESH_TOKEN_EXPIRY_SECONDS=expiry_time
     GEMINI_API_KEY=your_google_gemini_api_key
 
 **`frontend/.env.example`**
