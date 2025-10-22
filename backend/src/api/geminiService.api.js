@@ -1,24 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-console.log(process.env.GEMIMI_API_KEY);
+const API_KEY = process.env.GEMINI_API_KEY;
 
-const genAI = new GoogleGenerativeAI(process.env.GEMIMI_API_KEY);
-
-async function predictCategory(description) {
-  try {
-    const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
-
-    const promt = `Analyze the following expense description and choose the single best category from the list: "Marketing", "Software", "Travel", "Supplies", "Meals & Entertainment", "Other". Respond with *only* the category name.
-
-    Description: ${description}`
-
-    const result = await model.generateContent(promt);
-
-    return result.response.text();
-    
-  } catch (error) {
-    console.log(error.message);
-  }
+if (!API_KEY) {
+  throw new Error("ERROR: API KEY IS MISSING IN THE ENVIRONMENT VARIABLES");
 }
 
-export default predictCategory;
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+export default model;
