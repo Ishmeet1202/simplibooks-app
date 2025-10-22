@@ -3,7 +3,32 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Organization } from "../models/organizations.model.js";
 import { Expense } from "../models/expenses.model.js";
+import predictCategory from "../api/geminiService.api.js";
 import z from "zod";
+
+const categorySelection = asyncHandler(async (req, res) => {
+    const categorySelectionSchema = z.object({
+        description: z.string().trim().min(1, {message: "Description is empty"})
+    });
+
+    const validationResult = categorySelectionSchema.safeParse(req.body);
+
+    if (!validationResult.success) {
+        const errorMessages = validationResult.error.issues.map(issue => issue.message).join(', ');
+        throw new ApiError(400, errorMessages);
+    }
+
+    const { description } = validationResult.data;
+
+    const category = await predictCategory(description);
+
+    if (!category) {
+        throw new ApiError(500, "Something went wrong while predicting the category");
+    }
+    
+    return res.status(200)
+        .json(new ApiResponse(200, { category }, "Category predicts successfully"));
+});
 
 const createExpense = asyncHandler(async (req, res) => {
     const createExpenseSchema = z.object({
@@ -171,4 +196,4 @@ const deleteExpense = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Expense deleted successfully"));
 });
 
-export { createExpense, getAllExpenses, updateExpense, deleteExpense };
+export { createExpense, getAllExpenses, updateExpense, deleteExpense, categorySelection };
