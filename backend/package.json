@@ -5,7 +5,8 @@
   "description": "Backend for SimpliBooks app",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
+    "start": "node src/index.js"
   },
   "author": "Ishmeet Singh",
   "license": "ISC",
