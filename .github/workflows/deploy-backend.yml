@@ -22,7 +22,7 @@ jobs:
           cd backend
           zip -r ../backend-deploy.zip .
 
-      # Step 3: Log in to AWS (Good practice, but step 4 is what fixes the error)
+      # Step 3: Configure AWS Credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4 # Updated to v4
         with:
@@ -34,15 +34,17 @@ jobs:
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:
-          # --- THIS IS THE FIX FOR THE "Error" ---
-          # We must pass the secrets directly to *this* action
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           
-          # --- These are your existing, correct settings ---
           application_name: simplibooks-app
           environment_name: simplibooks-app-env
           region: ap-south-1 # ⬇️ IMPORTANT: Make sure this region is correct ⬇️
           
-          # --- THIS IS THE FIX FOR THE "Warning" ---
-          deployment_package: backend-deploy.zip # Was: zip_file
+          deployment_package: backend-deploy.zip
+          
+          # --- THIS IS THE FIX ---
+          # We will create a unique version label for every deploy
+          # using the commit's unique SHA hash.
+          version_label: simplibooks-${{ github.sha }}
+
