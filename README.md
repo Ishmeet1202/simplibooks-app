@@ -17,7 +17,6 @@
     * Add line items, taxes (GST), and custom notes.
     * Generate and download invoices as professional PDF documents.
 * **🤖 AI-Powered Features:**
-    * **Email Composer:** Instantly generate professional emails for sending invoices and payment reminders.
     * **Smart Categorization:** Automatically suggests expense categories based on the description.
 
 ---
@@ -155,8 +154,7 @@ The backend provides the following RESTful API endpoints. All protected routes r
   * `DELETE /api/v1/expenses/:id` - Permanently deletes an expense record.
 
   #### **AI**
-  * `POST /api/v1/ai/generate-email` - Generates email content for an invoice using AI.
-  * `POST /api/v1/ai/suggest-category` - Suggests a category for an expense based on its description.
+  * `POST /api/v1/ai/predict-category` - Suggests a category for an expense based on its description.
 
 </details>
 
