@@ -1,0 +1,50 @@
+# This is the name of your workflow
+name: Deploy Backend to Elastic Beanstalk
+
+# This tells GitHub WHEN to run the workflow
+on:
+  push:
+    branches:
+      - main  # Run this *only* when you push or merge to the 'main' branch
+
+# This defines the "job" or steps to run
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # Use a standard Linux virtual machine
+
+    steps:
+      # Step 1: Check out your code from the 'main' branch
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Zip up *only* the backend folder
+      # This is the magic step that solves your "monorepo" problem
+      - name: Create backend deployment zip
+        run: |
+          cd backend  # Go *into* the backend folder
+          zip -r ../backend-deploy.zip .  # Zip everything inside and save it one level up
+
+      # Step 3: Log in to AWS
+      # This uses the secrets you just created in GitHub
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # 
+          # ⬇️ ⬇️ ⬇️ CRITICAL: CHANGE THIS ⬇️ ⬇️ ⬇️
+          #
+          aws-region: ap-south-1 # This MUST match your Elastic Beanstalk environment's region (from your screenshot)
+
+      # Step 4: Deploy the zip file to Elastic Beanstalk
+      # This is a pre-built "Action" that does the hard work
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          application_name: simplibooks-app      # The EB app name you created
+          environment_name: simplibooks-app-env # The EB environment name you created
+          zip_file: backend-deploy.zip          # The zip file we created in Step 2
+          #
+          # ⬇️ ⬇️ ⬇️ CRITICAL: CHANGE THIS ⬇️ ⬇️ ⬇️
+          #
+          region: ap-south-1                    # This MUST match your region again
