@@ -1,50 +1,48 @@
-# This is the name of your workflow
+# Name of your workflow
 name: Deploy Backend to Elastic Beanstalk
 
-# This tells GitHub WHEN to run the workflow
+# Run this *only* when you push or merge to the 'main' branch
 on:
   push:
     branches:
-      - main  # Run this *only* when you push or merge to the 'main' branch
+      - main
 
-# This defines the "job" or steps to run
 jobs:
   deploy:
-    runs-on: ubuntu-latest # Use a standard Linux virtual machine
+    runs-on: ubuntu-latest
 
     steps:
       # Step 1: Check out your code from the 'main' branch
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Updated to v4
 
       # Step 2: Zip up *only* the backend folder
-      # This is the magic step that solves your "monorepo" problem
       - name: Create backend deployment zip
         run: |
-          cd backend  # Go *into* the backend folder
-          zip -r ../backend-deploy.zip .  # Zip everything inside and save it one level up
+          cd backend
+          zip -r ../backend-deploy.zip .
 
-      # Step 3: Log in to AWS
-      # This uses the secrets you just created in GitHub
+      # Step 3: Log in to AWS (Good practice, but step 4 is what fixes the error)
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4 # Updated to v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # 
-          # ⬇️ ⬇️ ⬇️ CRITICAL: CHANGE THIS ⬇️ ⬇️ ⬇️
-          #
-          aws-region: ap-south-1 # This MUST match your Elastic Beanstalk environment's region (from your screenshot)
+          aws-region: ap-south-1 # ⬇️ IMPORTANT: Make sure this region is correct ⬇️
 
       # Step 4: Deploy the zip file to Elastic Beanstalk
-      # This is a pre-built "Action" that does the hard work
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:
-          application_name: simplibooks-app      # The EB app name you created
-          environment_name: simplibooks-app-env # The EB environment name you created
-          zip_file: backend-deploy.zip          # The zip file we created in Step 2
-          #
-          # ⬇️ ⬇️ ⬇️ CRITICAL: CHANGE THIS ⬇️ ⬇️ ⬇️
-          #
-          region: ap-south-1                    # This MUST match your region again
+          # --- THIS IS THE FIX FOR THE "Error" ---
+          # We must pass the secrets directly to *this* action
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          
+          # --- These are your existing, correct settings ---
+          application_name: simplibooks-app
+          environment_name: simplibooks-app-env
+          region: ap-south-1 # ⬇️ IMPORTANT: Make sure this region is correct ⬇️
+          
+          # --- THIS IS THE FIX FOR THE "Warning" ---
+          deployment_package: backend-deploy.zip # Was: zip_file
