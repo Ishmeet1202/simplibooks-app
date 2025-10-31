@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/users.model.js";
 import jwt from "jsonwebtoken";
 import z from "zod";
+import { Organization } from "../models/organizations.model.js";
 
 const generateAccessTokenAndRefreshToken = async (userId) => {
   try {
@@ -147,6 +148,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
   }
 
+  const userWithoutPasswordAndRefreshToken = await User.findById(decodedToken?._id).select("-password -refreshToken");
+  const organization = await Organization.findOne({ownerId: user._id});
+  const hasOrg = !!organization;
+
   const { accessToken, refreshToken: newRefreshToken } =
     await generateAccessTokenAndRefreshToken(user._id);
 
@@ -166,7 +171,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { accessToken },
+        { 
+          accessToken,
+          user: userWithoutPasswordAndRefreshToken,
+          hasOrg
+        },
         "Access token refreshed successfully"
       )
     );
