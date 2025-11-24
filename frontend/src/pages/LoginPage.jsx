@@ -49,9 +49,7 @@ const LoginPage = () => {
   }
 
   return (
-    // Softer dark background for better contrast
     <div className="flex min-h-screen w-full items-center justify-center bg-slate-900 p-4 text-white">
-      {/* This is now the main card container */}
       <div className="w-full max-w-md animate-in fade-in-50 slide-in-from-bottom-5 duration-500 rounded-lg border border-slate-700 bg-slate-800 p-8 shadow-lg">
         <div className="space-y-4 text-center">
           <span className="text-3xl font-bold text-indigo-400">

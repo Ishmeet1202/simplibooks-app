@@ -8,7 +8,7 @@ import {
   TrendingUp,
   Settings,
   LogOut,
-  X, // Close icon
+  X,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -93,7 +93,7 @@ const MobileSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                           <li key={item.name}>
                             <NavLink
                               to={item.href}
-                              onClick={() => setSidebarOpen(false)} // Close sidebar on link click
+                              onClick={() => setSidebarOpen(false)}
                               className={({ isActive }) =>
                                 `group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors ${
                                   isActive

@@ -93,7 +93,6 @@ const RegisterPage = () => {
   }
 
   return (
-    // Main container with a dark background, consistent with LoginPage
     <div className="flex min-h-screen w-full items-center justify-center bg-slate-900 p-4 text-white">
       {/* Single card container for a cohesive look */}
       <div className="w-full max-w-md animate-in fade-in-50 slide-in-from-bottom-5 duration-500 rounded-lg border border-slate-700 bg-slate-800 p-8 shadow-lg">

@@ -40,7 +40,7 @@ const OnboardingPage = () => {
           city: formData.city,
           state: formData.state,
           postalCode: formData.postalCode,
-          country: "India", // Assuming a default country
+          country: "India",
         },
         gstin: formData.gstin,
       });

@@ -1,20 +1,14 @@
 name: Deploy Frontend to S3
 
 on:
-  push:
-    branches:
-      - main          # ⬅ change to dev if you deploy from dev
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/deploy-frontend-s3.yml'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -38,8 +32,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+          aws-region: 'ap-south-1'
 
       - name: Sync dist to S3
-        run: |
-          aws s3 sync frontend/dist s3://${{ secrets.S3_BUCKET_NAME }} --delete
+        run: aws s3 sync frontend/dist s3://${{ secrets.S3_BUCKET_NAME }} --delete

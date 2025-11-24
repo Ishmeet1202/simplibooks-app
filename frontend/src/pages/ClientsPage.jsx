@@ -241,7 +241,6 @@ const ClientsPage = () => {
         title={editingClient ? "Edit Client" : "Add New Client"}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* --- CORRECTED AND COMPLETED FORM --- */}
           <div>
             <label className="block text-sm font-medium text-slate-300">
               Name *

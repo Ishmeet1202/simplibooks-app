@@ -14,7 +14,7 @@ const CreateInvoicePage = () => {
     dueDate: "",
     notes: "",
     terms: "",
-    taxRate: 18, // Default tax rate
+    taxRate: 18,
   });
   const [lineItems, setLineItems] = useState([
     { description: "", quantity: 1, unitPrice: 0 },
@@ -36,7 +36,6 @@ const CreateInvoicePage = () => {
 
   const handleLineItemChange = (index, field, value) => {
     const updatedItems = [...lineItems];
-    // Ensure numeric values are numbers, not strings
     const numericValue =
       field === "quantity" || field === "unitPrice"
         ? parseFloat(value) || 0
@@ -74,8 +73,6 @@ const CreateInvoicePage = () => {
     setLoading(true);
 
     try {
-      // SECURITY: Send only raw data to the backend.
-      // The backend is responsible for all final calculations.
       const invoiceData = {
         clientId: formData.clientId,
         issueDate: formData.issueDate,
@@ -96,14 +93,10 @@ const CreateInvoicePage = () => {
       navigate(`/invoices/${response.data.data._id}`);
     } catch (error) {
       console.error("Failed to create invoice:", error);
-      // You should add user-facing error handling here, e.g., a toast notification
     } finally {
       setLoading(false);
     }
   };
-
-  // The helper function is now imported, so this local one is not needed.
-  // const formatCurrency = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
 
   return (
     <div className="space-y-8 animate-in fade-in-50 duration-500">

@@ -28,24 +28,17 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(token); // Store token in-memory
       setUser(loggedInUser);
 
-      // --- THIS IS THE FIX ---
-      // We must check for an organization *after* getting the token.
-      // To solve the race condition, we manually attach the new token
-      // to this one specific request.
       try {
         await axiosPrivate.get("/organizations/mine", {
-          headers: { Authorization: `Bearer ${token}` }, // Manually inject the new token
+          headers: { Authorization: `Bearer ${token}` },
         });
-        // If the request succeeds (doesn't throw 404), they have an org
         setHasOrganization(true);
       } catch (orgError) {
-        // If it throws an error (like 404 Not Found), they don't have an org
         setHasOrganization(false);
       }
 
       return { success: true };
     } catch (error) {
-      // This block catches errors from the LOGIN request itself
       let message;
       if (!error?.response) {
         message = "No server response";
@@ -61,13 +54,12 @@ export const AuthProvider = ({ children }) => {
         message: message,
       };
     } finally {
-      setLoading(false); // Set loading to false when login attempt is finished
+      setLoading(false);
     }
   };
 
   const register = async (name, email, password) => {
     try {
-      // Use public API for register
       await api.post("/auth/", { name, email, password });
       return { success: true };
     } catch (error) {
@@ -88,12 +80,10 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      // Use public API for logout
       await api.post("/auth/logout");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // Clear all frontend state
       setUser(null);
       setAccessToken(null);
       setHasOrganization(false);
@@ -111,8 +101,8 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     setUser,
-    accessToken, // Expose for useAxiosPrivate
-    setAccessToken, // Expose for useRefreshToken
+    accessToken,
+    setAccessToken, 
     loading,
     setLoading,
     hasOrganization,

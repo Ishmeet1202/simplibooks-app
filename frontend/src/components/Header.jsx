@@ -16,7 +16,6 @@ const Header = ({ setSidebarOpen }) => {
         <Menu className="h-6 w-6" aria-hidden="true" />
       </button>
 
-      {/* This div acts as a separator, pushing the user profile to the right */}
       <div className="flex-1 text-sm font-semibold leading-6 text-slate-50 lg:hidden">
         Dashboard
       </div>
