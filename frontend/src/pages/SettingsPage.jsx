@@ -17,7 +17,6 @@ const TabButton = ({ id, name, icon: Icon, activeTab, setActiveTab }) => (
   </button>
 );
 
-// Reusable Form Card Component
 const FormCard = ({ title, children, message, messageType }) => (
   <div className="rounded-lg border border-slate-700 bg-slate-800 animate-in fade-in-50 duration-500">
     <div className="p-6">
@@ -62,7 +61,7 @@ const SettingsPage = () => {
     prefix: "",
     notes: "",
     terms: "",
-  }); // Added notes and terms
+  });
   const [messages, setMessages] = useState({
     profile: "",
     password: "",
@@ -84,7 +83,7 @@ const SettingsPage = () => {
         const response = await axiosPrivate.get("/organizations/mine");
         const org = response.data.data;
         setOrganization(org);
-        setProfileForm({ name: user?.name || "" }); // Also reset profile form on load
+        setProfileForm({ name: user?.name || "" });
         setOrgForm({
           name: org.name || "",
           street: org.address?.street || "",

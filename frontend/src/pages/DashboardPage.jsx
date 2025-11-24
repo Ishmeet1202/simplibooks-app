@@ -15,9 +15,8 @@ import {
   DollarSign,
   AlertTriangle,
   Loader2,
-} from "lucide-react"; // Added Loader2
-import useAxiosPrivate from "../hooks/useAxiosPrivate"; // <-- 1. IMPORT THE HOOK
-
+} from "lucide-react";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -29,17 +28,15 @@ ChartJS.register(
 
 const DashboardPage = () => {
   // --- THIS IS THE FIX ---
-  const [dashboardData, setDashboardData] = useState(null); // Was: = (null)
+  const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const axiosPrivate = useAxiosPrivate(); // <-- 2. CALL THE HOOK
+  const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
-    // This function is now defined inside useEffect or wrapped in useCallback
-    // to ensure it has access to the correct `axiosPrivate` instance.
     const fetchDashboardData = async () => {
-      setLoading(true); // Set loading to true for fetch
+      setLoading(true);
       try {
-        const response = await axiosPrivate.get("/dashboard/stats"); // This now uses the secure instance
+        const response = await axiosPrivate.get("/dashboard/stats");
         setDashboardData(response.data.data);
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
@@ -49,7 +46,7 @@ const DashboardPage = () => {
     };
 
     fetchDashboardData();
-  }, [axiosPrivate]); // Add axiosPrivate as a dependency
+  }, [axiosPrivate]);
 
   if (loading) {
     return (
@@ -194,7 +191,6 @@ const DashboardPage = () => {
       <div className="rounded-lg border border-slate-700 bg-slate-800 p-6 shadow-sm">
         <div className="h-96">
           {" "}
-          {/* Set a fixed height for the chart container */}
           <Bar data={chartDataConfig} options={chartOptions} />
         </div>
       </div>

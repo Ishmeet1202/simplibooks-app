@@ -24,8 +24,6 @@ const Sidebar = () => {
   ];
 
   return (
-    // This sidebar will be fixed on desktop (lg screens) and hidden on mobile.
-    // A separate button in your Header/Navbar would toggle its visibility on mobile.
     <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
       <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-slate-700 bg-slate-800 px-6 pb-4">
         <div className="flex h-16 shrink-0 items-center gap-x-3">
@@ -41,7 +39,6 @@ const Sidebar = () => {
                   <li key={item.name}>
                     <NavLink
                       to={item.href}
-                      // NavLink's function gives us isActive to conditionally apply classes
                       className={({ isActive }) =>
                         `group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors ${
                           isActive

@@ -25,7 +25,6 @@ const InvoicesPage = () => {
   }, [searchTerm]);
 
   useEffect(() => {
-    // This effect now runs only when the final, debounced filters are set.
     fetchInvoices();
   }, [filters]);
 
@@ -46,8 +45,8 @@ const InvoicesPage = () => {
   };
 
   const handleClearFilters = () => {
-    setSearchTerm(""); // Clear the immediate search term
-    setFilters({ status: "", clientName: "" }); // Clear the actual filters
+    setSearchTerm("");
+    setFilters({ status: "", clientName: "" });
   };
 
   const getStatusBadge = (status) => {
@@ -102,8 +101,8 @@ const InvoicesPage = () => {
               type="text"
               className="block w-full rounded-md border-slate-600 bg-slate-700 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="e.g., Acme Inc."
-              value={searchTerm} // Use the immediate search term state
-              onChange={(e) => setSearchTerm(e.target.value)} // Update the immediate search term
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div>
@@ -137,7 +136,6 @@ const InvoicesPage = () => {
         </div>
       </div>
 
-      {/* Conditional rendering for loading state while table has data */}
       {loading && invoices.length > 0 && (
         <div className="text-center text-slate-400 flex items-center justify-center gap-x-2">
           <Loader2 className="h-5 w-5 animate-spin" />

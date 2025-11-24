@@ -5,16 +5,16 @@ import { Loader2, Plus, Trash2 } from "lucide-react";
 import { formatCurrency } from "../utils/formatters";
 
 const UpdateInvoicePage = () => {
-  const { id: invoiceId } = useParams(); // Get invoice ID from URL
+  const { id: invoiceId } = useParams();
   const navigate = useNavigate();
   const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true); // Start with loading true to fetch data
-  const [submitLoading, setSubmitLoading] = useState(false); // Separate loading state for submission
+  const [loading, setLoading] = useState(true);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [formData, setFormData] = useState({
     clientId: "",
     issueDate: "",
     dueDate: "",
-    status: "draft", // Added status field
+    status: "draft",
     notes: "",
     terms: "",
     taxRate: 0,
@@ -22,9 +22,9 @@ const UpdateInvoicePage = () => {
   const [lineItems, setLineItems] = useState([
     { description: "", quantity: 1, unitPrice: 0 },
   ]);
-  const [invoiceNumber, setInvoiceNumber] = useState(""); // State to hold the invoice number for display
+  const [invoiceNumber, setInvoiceNumber] = useState("");
 
-  const invoiceStatuses = ["draft", "sent", "paid", "overdue", "void"]; // Define possible statuses
+  const invoiceStatuses = ["draft", "sent", "paid", "overdue", "void"];
 
   const axiosPrivate = useAxiosPrivate();
 
@@ -43,19 +43,19 @@ const UpdateInvoicePage = () => {
         setClients(activeClients);
 
         const invoiceData = invoiceRes.data.data;
-        setInvoiceNumber(invoiceData.invoiceNumber); // Store invoice number
+        setInvoiceNumber(invoiceData.invoiceNumber);
         setFormData({
           clientId: invoiceData.clientId._id,
           issueDate: new Date(invoiceData.issueDate)
             .toISOString()
             .split("T")[0],
           dueDate: new Date(invoiceData.dueDate).toISOString().split("T")[0],
-          status: invoiceData.status || "draft", // Fetch current status
+          status: invoiceData.status || "draft",
           notes: invoiceData.notes || "",
           terms: invoiceData.terms || "",
           taxRate: invoiceData.tax?.rate || 0,
         });
-        // Ensure lineItems always have quantity and unitPrice
+
         setLineItems(
           invoiceData.lineItems.map((item) => ({
             ...item,
@@ -65,15 +65,13 @@ const UpdateInvoicePage = () => {
         );
       } catch (error) {
         console.error("Failed to fetch data for editing:", error);
-        // Navigate back if invoice doesn't exist?
-        // navigate("/invoices", { state: { error: "Invoice not found." } });
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [invoiceId, navigate]); // Added navigate to dependency array
+  }, [invoiceId, navigate]);
 
   const handleLineItemChange = (index, field, value) => {
     const updatedItems = [...lineItems];
@@ -89,7 +87,7 @@ const UpdateInvoicePage = () => {
     setLineItems([
       ...lineItems,
       { description: "", quantity: 1, unitPrice: 0 },
-    ]); // Default unitPrice to 0
+    ]);
   };
 
   const removeLineItem = (index) => {
@@ -110,32 +108,31 @@ const UpdateInvoicePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitLoading(true); // Use separate loading state
+    setSubmitLoading(true);
 
     try {
       const invoiceData = {
         issueDate: formData.issueDate,
         dueDate: formData.dueDate,
-        status: formData.status, // Include status in the update payload
+        status: formData.status,
         lineItems: lineItems.map(({ description, quantity, unitPrice }) => ({
           description,
-          quantity: quantity || 1, // Ensure quantity is at least 1
-          unitPrice: unitPrice || 0, // Ensure unitPrice is at least 0
+          quantity: quantity || 1,
+          unitPrice: unitPrice || 0,
         })),
         tax: {
-          rate: formData.taxRate || 0, // Ensure taxRate is at least 0
+          rate: formData.taxRate || 0,
         },
         notes: formData.notes,
         terms: formData.terms,
       };
 
       await axiosPrivate.patch(`/invoices/${invoiceId}`, invoiceData);
-      navigate(`/invoices/${invoiceId}`); // Navigate back to the detail page
+      navigate(`/invoices/${invoiceId}`);
     } catch (error) {
       console.error("Failed to update invoice:", error);
-      // Add user-facing error handling (e.g., toast)
     } finally {
-      setSubmitLoading(false); // Use separate loading state
+      setSubmitLoading(false);
     }
   };
 

@@ -42,7 +42,7 @@ const InvoiceDetailPage = () => {
     setDownloading(true);
     try {
       const canvas = await html2canvas(element, {
-        scale: 2, // Higher scale for better quality
+        scale: 2,
         useCORS: true,
       });
 
@@ -147,7 +147,6 @@ const InvoiceDetailPage = () => {
         </div>
       </div>
 
-      {/* Invoice Content - FORCED BLACK & WHITE THEME */}
       <div
         id="invoice-content"
         className="rounded-lg border border-black bg-white text-black p-8 md:p-12"

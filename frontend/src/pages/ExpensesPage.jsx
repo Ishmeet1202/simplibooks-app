@@ -8,8 +8,8 @@ import {
   FilterX,
 } from "lucide-react";
 import { formatDate, formatCurrency } from "../utils/formatters";
-import Modal from "../components/Modal"; // Assuming Modal component exists
-import useAxiosPrivate from "../hooks/useAxiosPrivate"; // Assuming axiosPrivate instance exists
+import Modal from "../components/Modal"; 
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const ExpensesPage = () => {
   const [expenses, setExpenses] = useState([]);
@@ -18,7 +18,7 @@ const ExpensesPage = () => {
   const [editingExpense, setEditingExpense] = useState(null);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState(null);
-  const [isPredicting, setIsPredicting] = useState(false); // State for prediction loading
+  const [isPredicting, setIsPredicting] = useState(false);
 
   const [filters, setFilters] = useState({
     category: "",
@@ -41,7 +41,6 @@ const ExpensesPage = () => {
     "Other",
   ];
 
-  // --- Debounce Description Input for AI Prediction ---
   const [debouncedDescription, setDebouncedDescription] = useState(
     formData.description
   );
@@ -51,17 +50,15 @@ const ExpensesPage = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedDescription(formData.description);
-    }, 1000); // 1-second delay
+    }, 1000);
 
-    // Cleanup function to cancel the timeout if the user keeps typing
     return () => {
       clearTimeout(handler);
     };
-  }, [formData.description]); // Only re-run the effect if description changes
+  }, [formData.description]);
 
-  // --- Effect to Trigger Prediction ---
+
   useEffect(() => {
-    // Predict only when adding a new expense and description is long enough
     if (
       !editingExpense &&
       debouncedDescription &&
@@ -69,19 +66,17 @@ const ExpensesPage = () => {
     ) {
       predictCategory(debouncedDescription);
     }
-  }, [debouncedDescription, editingExpense]); // Run when debounced description changes
+  }, [debouncedDescription, editingExpense]);
 
   useEffect(() => {
     fetchExpenses();
   }, [filters]);
 
   const fetchExpenses = async () => {
-    // Only set full loading on initial fetch
     if (expenses.length === 0) setLoading(true);
     try {
       const params = new URLSearchParams();
       if (filters.category) params.append("category", filters.category);
-      // Add date filters if needed
       const response = await axiosPrivate.get(`/expenses?${params.toString()}`);
       setExpenses(response.data.data);
     } catch (error) {
@@ -91,22 +86,19 @@ const ExpensesPage = () => {
     }
   };
 
-  // --- Predict Category Function ---
   const predictCategory = async (description) => {
-    if (!description || description.length < 3) return; // Don't predict for short descriptions
+    if (!description || description.length < 3) return;
     setIsPredicting(true);
     try {
       const response = await axiosPrivate.post("/ai/predict-category", {
         description,
       });
       const predictedCategory = response.data.data.category;
-      // Only update if the predicted category is valid
       if (categories.includes(predictedCategory)) {
         setFormData((prev) => ({ ...prev, category: predictedCategory }));
       }
     } catch (error) {
       console.error("Failed to predict category:", error);
-      // Optionally show a user-facing error, but don't block saving
     } finally {
       setIsPredicting(false);
     }
@@ -114,7 +106,6 @@ const ExpensesPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add a submitting state to disable button during axiosPrivate call
     setLoading((prev) => ({ ...prev, submit: true }));
     try {
       const expenseData = {
@@ -133,10 +124,9 @@ const ExpensesPage = () => {
         await axiosPrivate.post("/expenses", expenseData);
       }
       handleModalClose();
-      fetchExpenses(); // Re-fetch expenses after save
+      fetchExpenses();
     } catch (error) {
       console.error("Failed to save expense:", error);
-      // Add user-facing error message here
     } finally {
       setLoading((prev) => ({ ...prev, submit: false }));
     }
@@ -162,7 +152,7 @@ const ExpensesPage = () => {
     if (!expenseToDelete) return;
     try {
       await axiosPrivate.delete(`/expenses/${expenseToDelete._id}`);
-      fetchExpenses(); // Re-fetch after delete
+      fetchExpenses();
     } catch (error) {
       console.error("Failed to delete expense:", error);
     } finally {
@@ -191,7 +181,6 @@ const ExpensesPage = () => {
   }, [expenses]);
 
   if (loading && expenses.length === 0) {
-    // Check specific loading state for initial load
     return (
       <div className="flex h-full w-full items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-indigo-400" />

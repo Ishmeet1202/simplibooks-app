@@ -1,36 +1,28 @@
-# Name of your workflow
 name: Deploy Backend to Elastic Beanstalk
 
-# Run this *only* when you push or merge to the 'main' branch
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out your code from the 'main' branch
       - name: Checkout code
-        uses: actions/checkout@v4 # Updated to v4
+        uses: actions/checkout@v4
 
-      # Step 2: Zip up *only* the backend folder
       - name: Create backend deployment zip
         run: |
           cd backend
           zip -r ../backend-deploy.zip .
 
-      # Step 3: Configure AWS Credentials
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4 # Updated to v4
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1 # ⬇️ IMPORTANT: Make sure this region is correct ⬇️
+          aws-region: ap-south-1
 
-      # Step 4: Deploy the zip file to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:
@@ -39,12 +31,9 @@ jobs:
           
           application_name: simplibooks-app
           environment_name: simplibooks-app-env
-          region: ap-south-1 # ⬇️ IMPORTANT: Make sure this region is correct ⬇️
+          region: ap-south-1
           
           deployment_package: backend-deploy.zip
           
-          # --- THIS IS THE FIX ---
-          # We will create a unique version label for every deploy
-          # using the commit's unique SHA hash.
           version_label: simplibooks-${{ github.sha }}
 
