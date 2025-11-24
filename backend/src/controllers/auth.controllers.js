@@ -108,6 +108,7 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "None",
+    path: "/",
     maxAge: (parseInt(process.env.REFRESH_TOKEN_EXPIRY_SECONDS, 10) * 1000)
   };
 
@@ -162,6 +163,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "None",
+    path: "/",
     maxAge: (parseInt(process.env.REFRESH_TOKEN_EXPIRY_SECONDS, 10) * 1000)
   };
 
@@ -207,6 +209,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "None",
+        path: "/",
         maxAge: (parseInt(process.env.REFRESH_TOKEN_EXPIRY_SECONDS, 10) * 1000)
     };
 
