@@ -28,34 +28,63 @@ const OnboardingPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
+  try {
+    await axiosPrivate.post("/organizations", {
+      name: formData.name,
+      address: {
+        street: formData.street,
+        city: formData.city,
+        state: formData.state,
+        postalCode: formData.postalCode,
+        country: "India",
+      },
+      gstin: formData.gstin,
+    });
+
+    // re-sync: fetch the org to be 100% sure
     try {
-      await axiosPrivate.post("/organizations", {
-        name: formData.name,
-        address: {
-          street: formData.street,
-          city: formData.city,
-          state: formData.state,
-          postalCode: formData.postalCode,
-          country: "India",
-        },
-        gstin: formData.gstin,
-      });
-
+      const orgRes = await axiosPrivate.get("/organizations/mine");
+      if (orgRes?.data?.data) {
+        setOrganizationCreated();
+        navigate("/dashboard");
+        return;
+      }
+    } catch (syncErr) {
+      console.warn("Org created but re-sync failed:", syncErr);
       setOrganizationCreated();
       navigate("/dashboard");
-    } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          "Failed to create organization. Please try again."
-      );
+      return;
+    }
+  } catch (error) {
+    const status = error?.response?.status;
+    if (status === 409) {
+      try {
+        const orgRes = await axiosPrivate.get("/organizations/mine");
+        if (orgRes?.data?.data) {
+          setOrganizationCreated();
+          navigate("/dashboard");
+          return;
+        }
+      } catch (syncErr) {
+        setOrganizationCreated();
+        navigate("/dashboard");
+        return;
+      }
     }
 
+    setError(
+      error.response?.data?.message ||
+        "Failed to create organization. Please try again."
+    );
+  } finally {
     setLoading(false);
-  };
+  }
+};
+
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-slate-900 p-4 text-white">

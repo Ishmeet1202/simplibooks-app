@@ -9,22 +9,23 @@ const PersistentLogin = () => {
   const { accessToken, loading, setLoading } = useAuth();
 
   useEffect(() => {
-    const verifyRefresh = async () => {
+    let isMounted = true;
+
+    const verify = async () => {
       try {
-        await refresh();
-      } catch (error) {
-        console.log(error.message);
+        if (!accessToken) {
+          await refresh();
+        }
+      } catch (err) {
+        console.error("PersistentLogin error:", err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
-    if (!accessToken) {
-      (async () => await verifyRefresh())();
-    } else {
-      setLoading(false);
-    }
-  }, [refresh, accessToken, setLoading]);
+    verify();
+    return () => (isMounted = false);
+  }, [accessToken, refresh, setLoading]);
 
   if (loading) {
     return (

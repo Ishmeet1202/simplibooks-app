@@ -34,7 +34,7 @@ function App() {
             <Route
               path="/onboarding"
               element={
-                <ProtectedRoute requiresOnboarding={false}>
+                <ProtectedRoute requireOrg={false}>
                   <OnboardingPage />
                 </ProtectedRoute>
               }
