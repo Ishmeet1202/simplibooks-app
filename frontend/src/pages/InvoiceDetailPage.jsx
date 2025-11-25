@@ -272,7 +272,7 @@ const InvoiceDetailPage = () => {
               <span>{formatCurrency(invoice.subtotal)}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-700">
-              <span>Tax ({invoice.tax?.rate * 100}%):</span>
+              <span>Tax ({invoice.tax?.rate}%):</span>
               <span>{formatCurrency(invoice.tax?.amount)}</span>
             </div>
             <div className="flex justify-between border-t border-black pt-2 text-lg font-bold text-black">
