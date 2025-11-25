@@ -1,88 +1,89 @@
 import { createContext, useContext, useState } from "react";
-import api from "../services/api";
 import { axiosPrivate } from "../services/api";
+import api from "../services/api";
 
 const AuthContext = createContext();
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [hasOrganization, setHasOrganization] = useState(false);
+
+  // PersistentLogin controls this
+  const [loading, setLoading] = useState(true); 
 
   const login = async (email, password) => {
     try {
-      // Use the public API for login
-      const response = await api.post("/auth/login", { email, password });
+      const res = await api.post("/auth/login", { email, password });
 
-      const { accessToken: token, user: loggedInUser } = response.data.data;
+      const token = res.data.data.accessToken;
+      const loggedInUser = res.data.data.user;
 
-      setAccessToken(token); // Store token in-memory
+      setAccessToken(token);
       setUser(loggedInUser);
 
+      axiosPrivate.defaults.headers.Authorization = `Bearer ${token}`;
+
       try {
-        await axiosPrivate.get("/organizations/mine", {
+        const orgRes = await axiosPrivate.get("/organizations/mine", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setHasOrganization(true);
-      } catch (orgError) {
+        setHasOrganization(Boolean(orgRes.data?.data));
+      } catch {
         setHasOrganization(false);
       }
 
       return { success: true };
     } catch (error) {
       let message;
-      if (!error?.response) {
-        message = "No server response";
-      } else if (error?.response?.status === 400) {
-        message = "Missing email or password";
-      } else if (error?.response?.status === 401) {
-        message = "Invalid credentials";
-      } else {
-        message = "Login failed";
-      }
-      return {
-        success: false,
-        message: message,
-      };
-    } finally {
-      setLoading(false);
+      if (!error?.response) message = "No server response";
+      else if (error?.response?.status === 400) message = "Missing email or password";
+      else if (error?.response?.status === 401) message = "Invalid credentials";
+      else message = "Login failed";
+
+      return { success: false, message };
     }
   };
 
   const register = async (name, email, password) => {
     try {
       await api.post("/auth/", { name, email, password });
+
+      const loginRes = await api.post("/auth/login", { email, password });
+
+      const token = loginRes.data.data.accessToken;
+      const loggedInUser = loginRes.data.data.user;
+
+      setAccessToken(token);
+      setUser(loggedInUser);
+
+      axiosPrivate.defaults.headers.Authorization = `Bearer ${token}`;
+
+      try {
+        const orgRes = await axiosPrivate.get("/organizations/mine", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setHasOrganization(Boolean(orgRes.data?.data));
+      } catch {
+        setHasOrganization(false);
+      }
+
       return { success: true };
     } catch (error) {
       let message;
-      if (!error?.response) {
-        message = "No server response";
-      } else if (error?.response?.status === 409) {
-        message = "User already existed with this email";
-      } else {
-        message = "Registration failed";
-      }
-      return {
-        success: false,
-        message: message,
-      };
+      if (!error?.response) message = "No server response";
+      else if (error?.response?.status === 409) message = "User already exists";
+      else message = "Registration failed";
+
+      return { success: false, message };
     }
   };
+
 
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-    } catch (error) {
-      console.error("Logout error:", error);
     } finally {
       setUser(null);
       setAccessToken(null);
@@ -90,29 +91,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateUser = (userData) => {
-    setUser(userData);
-  };
-
   const setOrganizationCreated = () => {
     setHasOrganization(true);
   };
 
-  const value = {
-    user,
-    setUser,
-    accessToken,
-    setAccessToken, 
-    loading,
-    setLoading,
-    hasOrganization,
-    setHasOrganization,
-    login,
-    register,
-    logout,
-    updateUser,
-    setOrganizationCreated,
-  };
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        accessToken,
+        hasOrganization,
+        loading,
+        setLoading,
+        login,
+        register,
+        logout,
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+        setOrganizationCreated,
+        setUser,
+        setAccessToken,
+        setHasOrganization,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };

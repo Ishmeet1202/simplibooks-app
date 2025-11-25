@@ -1,9 +1,9 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { Loader2 } from "lucide-react";
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, requireOrg = true }) => {
   const { user, loading, hasOrganization } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -14,16 +14,14 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  const isTargetingOnboarding = children.type.name === "OnboardingPage";
-
-  if (!hasOrganization && !isTargetingOnboarding) {
+  if (requireOrg && !hasOrganization) {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (hasOrganization && isTargetingOnboarding) {
+  if (!requireOrg && hasOrganization && location.pathname === "/onboarding") {
     return <Navigate to="/dashboard" replace />;
   }
 

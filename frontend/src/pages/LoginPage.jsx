@@ -43,6 +43,7 @@ const LoginPage = () => {
   };
 
   if (user) {
+    console.log("Step 2 hasOrgaization: ",hasOrganization);
     return (
       <Navigate to={hasOrganization ? "/dashboard" : "/onboarding"} replace />
     );
