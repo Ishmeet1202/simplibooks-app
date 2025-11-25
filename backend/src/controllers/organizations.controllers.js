@@ -59,13 +59,13 @@ const createOrganization = asyncHandler(async (req, res) => {
 });
 
 const getOrganization = asyncHandler(async (req, res) => {
+    
     const _id = req?.user?._id;
 
-    const organization = await Organization.findOne({ ownerId: _id });
+    const organization = await Organization.findOne({ownerId: _id});
 
     if (!organization) {
-        return res.status(200)
-            .json(new ApiResponse(200, null, "No organization yet"));
+        throw new ApiError(404, "Organization not found for this user");
     }
 
     return res.status(200)
