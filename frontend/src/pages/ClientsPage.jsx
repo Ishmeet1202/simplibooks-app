@@ -261,6 +261,7 @@ const ClientsPage = () => {
             </label>
             <input
               type="email"
+              required
               className="mt-1 block w-full rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-slate-50 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               value={formData.email}
               onChange={(e) =>
@@ -270,7 +271,7 @@ const ClientsPage = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-300">
-              Phone
+              Phone (e.g. +91**********)
             </label>
             <input
               type="tel"
