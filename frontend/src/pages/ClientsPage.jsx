@@ -94,15 +94,6 @@ const ClientsPage = () => {
     }
   };
 
-  const handleArchiveToggle = async (client) => {
-    try {
-      await axiosPrivate.patch(`/clients/${client._id}/toggle-archive`);
-      fetchClients();
-    } catch (error) {
-      console.error("Failed to toggle archive status:", error);
-    }
-  };
-
   const resetForm = () => {
     setFormData({
       name: "",
@@ -210,21 +201,6 @@ const ClientsPage = () => {
                         title="Edit Client"
                       >
                         <FilePenLine className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => handleArchiveToggle(client)}
-                        className="text-slate-400 hover:text-slate-200 transition-colors"
-                        title={
-                          client.isArchived
-                            ? "Unarchive Client"
-                            : "Archive Client"
-                        }
-                      >
-                        {client.isArchived ? (
-                          <ArchiveRestore className="h-5 w-5" />
-                        ) : (
-                          <Archive className="h-5 w-5" />
-                        )}
                       </button>
                     </td>
                   </tr>
